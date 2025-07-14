@@ -35,6 +35,7 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
   
   // Touch event state for swipe detection
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [lastMoveDirection, setLastMoveDirection] = useState<Direction | null>(null);
   const isDragging = useRef(false);
   
   const gap = 1; // 1px gap between pieces
@@ -85,12 +86,10 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
     // Minimum swipe distance threshold
     const minSwipeDistance = 30;
     
-    if (!isDragging.current && (Math.abs(deltaX) > minSwipeDistance || Math.abs(deltaY) > minSwipeDistance)) {
-      isDragging.current = true;
-      
-      // Determine swipe direction
-      let direction: Direction | null = null;
-      
+    // Determine swipe direction based on current position relative to start
+    let direction: Direction | null = null;
+    
+    if (Math.abs(deltaX) > minSwipeDistance || Math.abs(deltaY) > minSwipeDistance) {
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe
         direction = deltaX > 0 ? 'right' : 'left';
@@ -99,17 +98,20 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
         direction = deltaY > 0 ? 'down' : 'up';
       }
       
-      // Check if the piece can move in the detected direction
-      if (direction && movableDirections.includes(direction)) {
+      // Check if this is a new direction and the piece can move
+      if (direction && direction !== lastMoveDirection && movableDirections.includes(direction)) {
         onMove(direction);
-        // Reset touch start to prevent multiple moves in one swipe
-        setTouchStart(null);
+        setLastMoveDirection(direction);
+        
+        // Update touch start position for continuous swipe
+        setTouchStart({ x: touch.clientX, y: touch.clientY });
       }
     }
   };
 
   const handleTouchEnd = () => {
     setTouchStart(null);
+    setLastMoveDirection(null);
     isDragging.current = false;
   };
 

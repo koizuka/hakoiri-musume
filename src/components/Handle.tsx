@@ -78,6 +78,10 @@ export function Handle({ direction, isSelected, onClick, className }: HandleProp
       )}
       style={getPositionStyle()}
       onClick={onClick}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
       aria-label={`Move ${direction}`}
     >
       <span 
