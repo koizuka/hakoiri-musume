@@ -13,8 +13,8 @@ export function GameControls({ moves, canUndo, isWon, onUndo, onReset }: GameCon
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="flex items-center gap-6">
-        <div className="text-lg font-semibold">
-          手数: <span className="text-blue-600">{moves}</span>
+        <div className="text-lg font-semibold text-stone-800">
+          手数: <span className="text-blue-700 font-bold">{moves}</span>
         </div>
         
         {isWon && (
@@ -32,9 +32,7 @@ export function GameControls({ moves, canUndo, isWon, onUndo, onReset }: GameCon
           size="lg"
           className={cn(
             "mr-4",
-            canUndo && !isWon 
-              ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600" 
-              : "bg-gray-100 text-gray-400 border-gray-300 hover:bg-gray-100"
+            canUndo && !isWon ? "border-2 border-black" : ""
           )}
         >
           <span>↶</span>
@@ -43,9 +41,9 @@ export function GameControls({ moves, canUndo, isWon, onUndo, onReset }: GameCon
 
         <Button
           onClick={onReset}
-          variant="destructive"
+          variant="default"
           size="lg"
-          className="bg-red-500 hover:bg-red-600 text-white"
+          className="border-2 border-black"
         >
           <span>⟲</span>
           リセット

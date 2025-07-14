@@ -69,11 +69,11 @@ export function Handle({ direction, isSelected, onClick, className }: HandleProp
         isSelected ? 'border-2 border-amber-600' : 'border-2 border-stone-400',
         'flex items-center justify-center',
         'font-black text-lg',
-        isSelected ? 'text-white' : 'text-stone-600',
+        isSelected ? 'text-stone-700' : 'text-stone-600',
         'z-20',
         isSelected 
-          ? 'bg-amber-500 hover:bg-amber-600 opacity-100'
-          : 'bg-stone-300 hover:bg-stone-400 active:bg-stone-500 opacity-100',
+          ? 'bg-amber-200 hover:bg-amber-300 opacity-100'
+          : 'bg-stone-200 hover:bg-stone-300 active:bg-stone-400 opacity-100',
         className
       )}
       style={getPositionStyle()}
