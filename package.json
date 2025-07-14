@@ -3,6 +3,24 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "箱入り娘 (Hakoiri-musume) - Classic Japanese sliding puzzle game built with React and TypeScript",
+  "homepage": "https://koizuka.github.io/hakoiri-musume",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/koizuka/hakoiri-musume.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koizuka/hakoiri-musume/issues"
+  },
+  "keywords": [
+    "puzzle",
+    "game",
+    "react",
+    "typescript",
+    "sliding-puzzle",
+    "japanese-game",
+    "hakoiri-musume"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
