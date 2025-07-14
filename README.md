@@ -2,6 +2,10 @@
 
 伝統的な日本の滑り駒パズル「箱入り娘」をReactで実装したWebアプリケーションです。
 
+## 🎮 今すぐプレイ
+
+**[https://koizuka.github.io/hakoiri-musume/](https://koizuka.github.io/hakoiri-musume/)** でゲームを楽しめます！
+
 ## ゲームについて
 
 箱入り娘は、4×5の盤面で駒を滑らせて娘（2×2の大きな駒）を下部の出口まで移動させるパズルゲームです。
