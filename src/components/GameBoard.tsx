@@ -93,8 +93,8 @@ export function GameBoard({
       <div
         ref={boardRef}
         className={cn(
-          'relative bg-stone-100',
-          'focus:outline-none focus:ring-2 focus:ring-amber-500',
+          'relative bg-stone-100 border-4 border-black',
+          'focus:outline-none',
           'cursor-pointer'
         )}
         style={{
@@ -154,7 +154,7 @@ export function GameBoard({
         
         {/* Exit area */}
         <div
-          className="absolute bg-emerald-200 border-2 border-emerald-600 rounded-md flex items-center justify-center z-0"
+          className="absolute flex items-center justify-center z-0"
           style={exitStyle}
         >
           <span className="text-emerald-800 font-bold text-sm">出口</span>

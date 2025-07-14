@@ -38,7 +38,7 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
   const [lastMoveDirection, setLastMoveDirection] = useState<Direction | null>(null);
   const isDragging = useRef(false);
   
-  const gap = 1; // 1px gap between pieces
+  const gap = 0; // No gap between pieces
   const leftOffset = -3; // Move pieces left slightly
   const topOffset = -3; // Move pieces up slightly
   const style = {
