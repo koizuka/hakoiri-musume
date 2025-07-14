@@ -7,8 +7,42 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  # Detect which files have changed to determine if we need to run CI
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          base: main
+          filters: |
+            app:
+              - 'src/**'
+              - 'public/**'
+              - 'package*.json'
+              - 'tsconfig*.json'
+              - 'vite.config.ts'
+              - 'vitest.config.ts'
+              - 'postcss.config.js'
+              - 'tailwind.config.js'
+              - 'eslint.config.js'
+              - 'index.html'
+              - 'components.json'
+              - '.github/workflows/ci.yml'
+
+  test:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
 
     strategy:
       matrix:
@@ -45,3 +79,39 @@ jobs:
       with:
         name: dist
         path: dist/
+
+  # Summary job that provides a single status check for branch protection
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [changes, test]
+    if: always()
+
+    steps:
+      - name: Check CI Results
+        run: |
+          echo "Checking CI results..."
+          echo "App changes: ${{ needs.changes.outputs.app }}"
+
+          # Check if any tests were supposed to run
+          if [[ "${{ needs.changes.outputs.app }}" == "true" ]]; then
+            echo "Tests were executed. Checking results..."
+            
+            # Check if any job failed
+            if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+              echo "❌ CI failed: One or more tests failed"
+              exit 1
+            fi
+            
+            # Check if any job was cancelled
+            if [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+              echo "⚠️ CI cancelled: One or more jobs were cancelled"
+              exit 1
+            fi
+            
+            echo "✅ All tests passed!"
+          else
+            echo "✅ No code changes detected - skipping tests"
+          fi
+
+          echo "CI completed successfully!"
