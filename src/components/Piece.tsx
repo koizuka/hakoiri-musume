@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import type { Piece as PieceType, Direction } from '../types/game';
 import { Handle } from './Handle';
 import { cn } from '../lib/utils';
@@ -32,6 +33,10 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
   
   const colorStyle = PIECE_COLORS[piece.type];
   
+  // Touch event state for swipe detection
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const isDragging = useRef(false);
+  
   const gap = 1; // 1px gap between pieces
   const leftOffset = -3; // Move pieces left slightly
   const topOffset = -3; // Move pieces up slightly
@@ -63,6 +68,51 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
   const fontSize = getFontSize();
   const isVertical = size.height > size.width;
 
+  // Touch event handlers for swipe detection
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    setTouchStart({ x: touch.clientX, y: touch.clientY });
+    isDragging.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStart.x;
+    const deltaY = touch.clientY - touchStart.y;
+    
+    // Minimum swipe distance threshold
+    const minSwipeDistance = 30;
+    
+    if (!isDragging.current && (Math.abs(deltaX) > minSwipeDistance || Math.abs(deltaY) > minSwipeDistance)) {
+      isDragging.current = true;
+      
+      // Determine swipe direction
+      let direction: Direction | null = null;
+      
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        direction = deltaX > 0 ? 'right' : 'left';
+      } else {
+        // Vertical swipe
+        direction = deltaY > 0 ? 'down' : 'up';
+      }
+      
+      // Check if the piece can move in the detected direction
+      if (direction && movableDirections.includes(direction)) {
+        onMove(direction);
+        // Reset touch start to prevent multiple moves in one swipe
+        setTouchStart(null);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStart(null);
+    isDragging.current = false;
+  };
+
   // For vertical pieces, split the name into individual characters
   const renderText = () => {
     if (isVertical && name.length > 1) {
@@ -82,13 +132,17 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
       className={cn(
         'absolute border-2 shadow-md',
         'flex items-center justify-center font-bold',
-        'transition-all duration-200 ease-in-out'
+        'transition-all duration-200 ease-in-out',
+        'touch-none' // Prevent default touch behaviors
       )}
       style={{
         ...style,
         fontFamily: 'serif, "Hiragino Mincho Pro", "Yu Mincho", "MS Mincho", serif',
         borderRadius: '12px'
       }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {renderText()}
       
