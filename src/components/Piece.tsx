@@ -36,7 +36,6 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
   // Touch event state for swipe detection
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [lastMoveDirection, setLastMoveDirection] = useState<Direction | null>(null);
-  const [lastMoveTime, setLastMoveTime] = useState<number>(0);
   const isDragging = useRef(false);
   
   const gap = 1; // 1px gap between pieces
@@ -102,7 +101,6 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
         direction = deltaY > 0 ? 'down' : 'up';
       }
       
-      const currentTime = Date.now();
       const isNewDirection = direction !== lastMoveDirection;
       const isSameDirectionRepeat = direction === lastMoveDirection && 
         (absX > repeatSwipeDistance || absY > repeatSwipeDistance);
@@ -111,7 +109,6 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
       if (direction && movableDirections.includes(direction) && (isNewDirection || isSameDirectionRepeat)) {
         onMove(direction);
         setLastMoveDirection(direction);
-        setLastMoveTime(currentTime);
         
         // Update touch start position for continuous swipe
         setTouchStart({ x: touch.clientX, y: touch.clientY });
@@ -122,7 +119,6 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
   const handleTouchEnd = () => {
     setTouchStart(null);
     setLastMoveDirection(null);
-    setLastMoveTime(0);
     isDragging.current = false;
   };
 
