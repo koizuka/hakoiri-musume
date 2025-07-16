@@ -64,24 +64,28 @@ export function updateKeyboardMapping(pieces: Piece[], lastMovedPieceId?: string
         const piecesInDirection = mapping[directionKey];
         
         if (piecesInDirection.length > 1) {
-          // Find the piece that can fill the space left by the last moved piece
-          const fillerPiece = findFillerPiece(pieces, lastMovedPieceId, lastMoveDirection, directionKey);
+          // Check if the last moved piece can move in the current direction
+          const movedPieceIndex = piecesInDirection.indexOf(lastMovedPieceId);
           
-          if (fillerPiece) {
-            // Move the filler piece to the front
-            const fillerIndex = piecesInDirection.indexOf(fillerPiece);
-            if (fillerIndex > 0) {
-              piecesInDirection.splice(fillerIndex, 1);
-              piecesInDirection.unshift(fillerPiece);
-              mapping.selectedIndex[directionKey] = 0;
-            }
-          } else {
-            // If no filler piece, prioritize the last moved piece for auto-undo
-            const movedPieceIndex = piecesInDirection.indexOf(lastMovedPieceId);
+          if (movedPieceIndex >= 0) {
+            // Prioritize the last moved piece if it can move in the current direction
             if (movedPieceIndex > 0) {
               piecesInDirection.splice(movedPieceIndex, 1);
               piecesInDirection.unshift(lastMovedPieceId);
-              mapping.selectedIndex[directionKey] = 0;
+            }
+            mapping.selectedIndex[directionKey] = 0;
+          } else {
+            // If the last moved piece cannot move in this direction, find the filler piece
+            const fillerPiece = findFillerPiece(pieces, lastMovedPieceId, lastMoveDirection, directionKey);
+            
+            if (fillerPiece) {
+              // Move the filler piece to the front
+              const fillerIndex = piecesInDirection.indexOf(fillerPiece);
+              if (fillerIndex > 0) {
+                piecesInDirection.splice(fillerIndex, 1);
+                piecesInDirection.unshift(fillerPiece);
+                mapping.selectedIndex[directionKey] = 0;
+              }
             }
           }
         }
