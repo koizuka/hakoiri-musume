@@ -135,35 +135,27 @@ jobs:
           # Build with the PR-specific config
           npx vite build --config vite.config.pr.ts
 
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
       - name: Deploy to PR subdirectory
         run: |
-          # Try to checkout gh-pages branch, create if it doesn't exist
-          git fetch origin gh-pages:gh-pages || true
-          
-          if git show-ref --verify --quiet refs/heads/gh-pages; then
-            echo "gh-pages branch exists, checking out..."
-            git checkout gh-pages
-          else
-            echo "gh-pages branch doesn't exist, creating..."
-            git checkout --orphan gh-pages
-            git rm -rf . || true
-            echo "# GitHub Pages" > README.md
-            git add README.md
-            git commit -m "Initial gh-pages commit"
-          fi
-          
           # Create PR-specific directory
-          mkdir -p pr-${{ github.event.pull_request.number }}
+          mkdir -p gh-pages/pr-${{ github.event.pull_request.number }}
           
           # Copy built files to PR directory
-          cp -r dist/* pr-${{ github.event.pull_request.number }}/
+          cp -r dist/* gh-pages/pr-${{ github.event.pull_request.number }}/
           
           # Commit and push
+          cd gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Deploy PR #${{ github.event.pull_request.number }} preview" || echo "No changes to commit"
-          git push origin gh-pages
+          git commit -m "Deploy PR #${{ github.event.pull_request.number }} preview"
+          git push
 
       - name: Comment PR
         uses: actions/github-script@v7
