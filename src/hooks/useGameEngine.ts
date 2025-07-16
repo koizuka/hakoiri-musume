@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { GameState, Direction } from '../types/game';
+import type { GameState, Direction, KeyboardMapping } from '../types/game';
 import { initialPieces } from '../lib/gameData';
 import { canMovePiece, checkWinCondition } from '../lib/gameLogic';
 import { updateKeyboardMapping, getSelectedPieceForDirection, cycleAllDirections, resetKeyboardSelection } from '../lib/keyboardMapping';
@@ -27,11 +27,20 @@ export function useGameEngine() {
       gameState.pieces,
       gameState.moveHistory,
       pieceId,
-      direction
+      direction,
+      gameState.keyboardMapping
     );
 
     const isWon = checkWinCondition(result.pieces);
-    const newKeyboardMapping = updateKeyboardMapping(result.pieces, pieceId);
+    
+    // If auto-undo occurred, restore the saved keyboard mapping
+    // Otherwise, generate a new mapping with filler piece prioritization
+    let newKeyboardMapping: KeyboardMapping;
+    if (result.wasAutoUndo && result.keyboardMapping) {
+      newKeyboardMapping = result.keyboardMapping;
+    } else {
+      newKeyboardMapping = updateKeyboardMapping(result.pieces, pieceId, direction);
+    }
 
     setGameState({
       pieces: result.pieces,
@@ -40,7 +49,7 @@ export function useGameEngine() {
       keyboardMapping: resetKeyboardSelection(newKeyboardMapping),
       isWon
     });
-  }, [gameState.pieces, gameState.moveHistory, gameState.isWon]);
+  }, [gameState.pieces, gameState.moveHistory, gameState.keyboardMapping, gameState.isWon]);
 
   const undoMove = useCallback(() => {
     if (gameState.moveHistory.length === 0 || gameState.isWon) {
@@ -48,7 +57,15 @@ export function useGameEngine() {
     }
 
     const result = executeUndo(gameState.pieces, gameState.moveHistory);
-    const newKeyboardMapping = updateKeyboardMapping(result.pieces);
+    
+    // For manual undo, restore the saved keyboard mapping or create a clean one
+    let newKeyboardMapping: KeyboardMapping;
+    if (result.keyboardMapping) {
+      newKeyboardMapping = result.keyboardMapping;
+    } else {
+      // If no saved mapping, create a clean mapping without prioritization
+      newKeyboardMapping = updateKeyboardMapping(result.pieces);
+    }
 
     setGameState({
       pieces: result.pieces,

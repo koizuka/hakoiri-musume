@@ -1,7 +1,39 @@
 import type { Piece, KeyboardMapping, Direction } from '../types/game';
-import { getAllMovableDirections } from './gameLogic';
+import { getAllMovableDirections, getNewPosition, getOppositeDirection } from './gameLogic';
 
-export function updateKeyboardMapping(pieces: Piece[], lastMovedPieceId?: string): KeyboardMapping {
+function findFillerPiece(pieces: Piece[], lastMovedPieceId: string, lastMoveDirection: Direction, currentDirection: Direction): string | null {
+  const lastMovedPiece = pieces.find(p => p.id === lastMovedPieceId);
+  if (!lastMovedPiece) return null;
+  
+  // Calculate the original position of the last moved piece (before it moved)
+  const oppositeDirection = getOppositeDirection(lastMoveDirection);
+  const originalPosition = getNewPosition(lastMovedPiece.position, oppositeDirection);
+  
+  // Find pieces that can move into the space left by the last moved piece
+  for (const piece of pieces) {
+    if (piece.id === lastMovedPieceId) continue;
+    
+    // Check if this piece can move in the current direction and would end up in the original position
+    const newPosition = getNewPosition(piece.position, currentDirection);
+    
+    // Check if the new position overlaps with the original position of the moved piece
+    if (isPositionOverlap(newPosition, piece.size, originalPosition, lastMovedPiece.size)) {
+      return piece.id;
+    }
+  }
+  
+  return null;
+}
+
+function isPositionOverlap(pos1: { x: number; y: number }, size1: { width: number; height: number }, 
+                          pos2: { x: number; y: number }, size2: { width: number; height: number }): boolean {
+  return pos1.x < pos2.x + size2.width && 
+         pos1.x + size1.width > pos2.x && 
+         pos1.y < pos2.y + size2.height && 
+         pos1.y + size1.height > pos2.y;
+}
+
+export function updateKeyboardMapping(pieces: Piece[], lastMovedPieceId?: string, lastMoveDirection?: Direction): KeyboardMapping {
   const movableDirections = getAllMovableDirections(pieces);
   
   const mapping: KeyboardMapping = {
@@ -24,19 +56,34 @@ export function updateKeyboardMapping(pieces: Piece[], lastMovedPieceId?: string
     }
   });
 
-  // If a piece was just moved, prioritize it for auto-undo
-  if (lastMovedPieceId) {
+  // If a piece was just moved, prioritize pieces for intelligent selection
+  if (lastMovedPieceId && lastMoveDirection) {
     Object.keys(mapping).forEach(direction => {
       if (direction !== 'selectedIndex') {
         const directionKey = direction as Direction;
-        const pieces = mapping[directionKey];
-        const movedPieceIndex = pieces.indexOf(lastMovedPieceId);
+        const piecesInDirection = mapping[directionKey];
         
-        if (movedPieceIndex > 0) {
-          // Move the last moved piece to the front
-          pieces.splice(movedPieceIndex, 1);
-          pieces.unshift(lastMovedPieceId);
-          mapping.selectedIndex[directionKey] = 0;
+        if (piecesInDirection.length > 1) {
+          // Find the piece that can fill the space left by the last moved piece
+          const fillerPiece = findFillerPiece(pieces, lastMovedPieceId, lastMoveDirection, directionKey);
+          
+          if (fillerPiece) {
+            // Move the filler piece to the front
+            const fillerIndex = piecesInDirection.indexOf(fillerPiece);
+            if (fillerIndex > 0) {
+              piecesInDirection.splice(fillerIndex, 1);
+              piecesInDirection.unshift(fillerPiece);
+              mapping.selectedIndex[directionKey] = 0;
+            }
+          } else {
+            // If no filler piece, prioritize the last moved piece for auto-undo
+            const movedPieceIndex = piecesInDirection.indexOf(lastMovedPieceId);
+            if (movedPieceIndex > 0) {
+              piecesInDirection.splice(movedPieceIndex, 1);
+              piecesInDirection.unshift(lastMovedPieceId);
+              mapping.selectedIndex[directionKey] = 0;
+            }
+          }
         }
       }
     });

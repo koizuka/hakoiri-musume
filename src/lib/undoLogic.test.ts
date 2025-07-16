@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { Move, Piece } from '../types/game'
+import type { Move, Piece, KeyboardMapping } from '../types/game'
 import {
   isAutoUndo,
   executeUndo,
@@ -25,11 +25,25 @@ describe('Undo Logic', () => {
     }
   ]
 
+  const mockKeyboardMapping: KeyboardMapping = {
+    up: [],
+    down: [],
+    left: [],
+    right: ['piece1'],
+    selectedIndex: {
+      up: 0,
+      down: 0,
+      left: 0,
+      right: 0
+    }
+  }
+
   const mockMove: Move = {
     pieceId: 'piece1',
     from: { x: 0, y: 0 },
     to: { x: 1, y: 0 },
-    direction: 'right'
+    direction: 'right',
+    keyboardMappingBefore: mockKeyboardMapping
   }
 
   const mockMoveHistory: Move[] = [mockMove]
@@ -40,7 +54,8 @@ describe('Undo Logic', () => {
         pieceId: 'piece1',
         from: { x: 1, y: 0 },
         to: { x: 0, y: 0 },
-        direction: 'left'
+        direction: 'left',
+        keyboardMappingBefore: mockKeyboardMapping
       }
 
       expect(isAutoUndo(mockMove, reverseMove)).toBe(true)
@@ -51,7 +66,8 @@ describe('Undo Logic', () => {
         pieceId: 'piece2',
         from: { x: 1, y: 0 },
         to: { x: 0, y: 0 },
-        direction: 'left'
+        direction: 'left',
+        keyboardMappingBefore: mockKeyboardMapping
       }
 
       expect(isAutoUndo(mockMove, differentPieceMove)).toBe(false)
@@ -62,7 +78,8 @@ describe('Undo Logic', () => {
         pieceId: 'piece1',
         from: { x: 1, y: 0 },
         to: { x: 2, y: 0 },
-        direction: 'right'
+        direction: 'right',
+        keyboardMappingBefore: mockKeyboardMapping
       }
 
       expect(isAutoUndo(mockMove, sameDirectionMove)).toBe(false)
@@ -73,7 +90,8 @@ describe('Undo Logic', () => {
         pieceId: 'piece1',
         from: { x: 2, y: 0 },
         to: { x: 1, y: 0 },
-        direction: 'left'
+        direction: 'left',
+        keyboardMappingBefore: mockKeyboardMapping
       }
 
       expect(isAutoUndo(mockMove, differentPositionMove)).toBe(false)
@@ -84,7 +102,8 @@ describe('Undo Logic', () => {
         pieceId: 'piece1',
         from: { x: 0, y: 0 },
         to: { x: 1, y: 0 },
-        direction: 'right'
+        direction: 'right',
+        keyboardMappingBefore: mockKeyboardMapping
       }
 
       expect(isAutoUndo(undefined, anyMove)).toBe(false)
@@ -134,7 +153,8 @@ describe('Undo Logic', () => {
         'piece1',
         { x: 0, y: 0 },
         { x: 1, y: 0 },
-        'right'
+        'right',
+        mockKeyboardMapping
       )
 
       expect(newHistory).toHaveLength(1)
@@ -142,7 +162,8 @@ describe('Undo Logic', () => {
         pieceId: 'piece1',
         from: { x: 0, y: 0 },
         to: { x: 1, y: 0 },
-        direction: 'right'
+        direction: 'right',
+        keyboardMappingBefore: mockKeyboardMapping
       })
     })
 
@@ -152,7 +173,8 @@ describe('Undo Logic', () => {
         'piece2',
         { x: 1, y: 1 },
         { x: 1, y: 2 },
-        'down'
+        'down',
+        mockKeyboardMapping
       )
 
       expect(newHistory).toHaveLength(2)
@@ -163,7 +185,7 @@ describe('Undo Logic', () => {
 
   describe('executeMoveWithUndo', () => {
     it('should execute normal move', () => {
-      const result = executeMoveWithUndo(mockPieces, [], 'piece1', 'right')
+      const result = executeMoveWithUndo(mockPieces, [], 'piece1', 'right', mockKeyboardMapping)
 
       expect(result.wasAutoUndo).toBe(false)
       expect(result.moveHistory).toHaveLength(1)
@@ -183,7 +205,7 @@ describe('Undo Logic', () => {
         mockPieces[1]
       ] as Piece[]
 
-      const result = executeMoveWithUndo(piecesAfterMove, mockMoveHistory, 'piece1', 'left')
+      const result = executeMoveWithUndo(piecesAfterMove, mockMoveHistory, 'piece1', 'left', mockKeyboardMapping)
 
       expect(result.wasAutoUndo).toBe(true)
       expect(result.moveHistory).toHaveLength(0)
@@ -192,7 +214,7 @@ describe('Undo Logic', () => {
     })
 
     it('should handle invalid piece id', () => {
-      const result = executeMoveWithUndo(mockPieces, [], 'nonexistent', 'right')
+      const result = executeMoveWithUndo(mockPieces, [], 'nonexistent', 'right', mockKeyboardMapping)
 
       expect(result.pieces).toEqual(mockPieces)
       expect(result.moveHistory).toEqual([])
@@ -202,7 +224,7 @@ describe('Undo Logic', () => {
 
     it('should update move count correctly for normal moves', () => {
       const initialHistory = [mockMove]
-      const result = executeMoveWithUndo(mockPieces, initialHistory, 'piece2', 'down')
+      const result = executeMoveWithUndo(mockPieces, initialHistory, 'piece2', 'down', mockKeyboardMapping)
 
       expect(result.moves).toBe(2)
       expect(result.moveHistory).toHaveLength(2)

@@ -1,4 +1,4 @@
-import type { Move, Piece, Direction } from '../types/game';
+import type { Move, Piece, Direction, KeyboardMapping } from '../types/game';
 import { movePiece, getOppositeDirection } from './gameLogic';
 
 export function isAutoUndo(lastMove: Move | undefined, currentMove: Move): boolean {
@@ -14,9 +14,10 @@ export function executeUndo(pieces: Piece[], moveHistory: Move[]): {
   pieces: Piece[];
   moveHistory: Move[];
   moves: number;
+  keyboardMapping: KeyboardMapping | null;
 } {
   if (moveHistory.length === 0) {
-    return { pieces, moveHistory, moves: 0 };
+    return { pieces, moveHistory, moves: 0, keyboardMapping: null };
   }
 
   const lastMove = moveHistory[moveHistory.length - 1];
@@ -28,7 +29,8 @@ export function executeUndo(pieces: Piece[], moveHistory: Move[]): {
   return {
     pieces: newPieces,
     moveHistory: newMoveHistory,
-    moves: newMoveHistory.length
+    moves: newMoveHistory.length,
+    keyboardMapping: lastMove.keyboardMappingBefore
   };
 }
 
@@ -37,13 +39,15 @@ export function addMoveToHistory(
   pieceId: string,
   from: { x: number; y: number },
   to: { x: number; y: number },
-  direction: Direction
+  direction: Direction,
+  keyboardMappingBefore: KeyboardMapping
 ): Move[] {
   const newMove: Move = {
     pieceId,
     from,
     to,
-    direction
+    direction,
+    keyboardMappingBefore
   };
   
   return [...moveHistory, newMove];
@@ -53,16 +57,18 @@ export function executeMoveWithUndo(
   pieces: Piece[],
   moveHistory: Move[],
   pieceId: string,
-  direction: Direction
+  direction: Direction,
+  currentKeyboardMapping: KeyboardMapping
 ): {
   pieces: Piece[];
   moveHistory: Move[];
   moves: number;
   wasAutoUndo: boolean;
+  keyboardMapping: KeyboardMapping | null;
 } {
   const piece = pieces.find(p => p.id === pieceId);
   if (!piece) {
-    return { pieces, moveHistory, moves: moveHistory.length, wasAutoUndo: false };
+    return { pieces, moveHistory, moves: moveHistory.length, wasAutoUndo: false, keyboardMapping: null };
   }
 
   const newPieces = movePiece(pieces, pieceId, direction);
@@ -72,20 +78,22 @@ export function executeMoveWithUndo(
     pieceId,
     from: piece.position,
     to: newPosition,
-    direction
+    direction,
+    keyboardMappingBefore: currentKeyboardMapping
   };
 
   const lastMove = moveHistory[moveHistory.length - 1];
   const isUndo = isAutoUndo(lastMove, proposedMove);
   
   if (isUndo) {
-    // Auto-undo: remove the last move from history
+    // Auto-undo: remove the last move from history and restore its keyboard mapping
     const newMoveHistory = moveHistory.slice(0, -1);
     return {
       pieces: newPieces,
       moveHistory: newMoveHistory,
       moves: newMoveHistory.length,
-      wasAutoUndo: true
+      wasAutoUndo: true,
+      keyboardMapping: lastMove.keyboardMappingBefore
     };
   } else {
     // Normal move: add to history
@@ -94,13 +102,15 @@ export function executeMoveWithUndo(
       pieceId,
       piece.position,
       newPosition,
-      direction
+      direction,
+      currentKeyboardMapping
     );
     return {
       pieces: newPieces,
       moveHistory: newMoveHistory,
       moves: newMoveHistory.length,
-      wasAutoUndo: false
+      wasAutoUndo: false,
+      keyboardMapping: null
     };
   }
 }
