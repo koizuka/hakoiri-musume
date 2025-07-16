@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { GameState, Direction } from '../types/game';
+import type { GameState, Direction, KeyboardMapping } from '../types/game';
 import { initialPieces } from '../lib/gameData';
 import { canMovePiece, checkWinCondition } from '../lib/gameLogic';
 import { updateKeyboardMapping, getSelectedPieceForDirection, cycleAllDirections, resetKeyboardSelection } from '../lib/keyboardMapping';
