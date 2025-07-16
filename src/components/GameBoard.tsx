@@ -185,9 +185,14 @@ export function GameBoard({
       </div>
 
       {/* Instructions */}
-      <div className="text-sm text-gray-600 text-center max-w-md">
-        <p>矢印キー: 駒を移動 | スペース: 候補切り替え | U: アンドゥ | ESC: リセット</p>
-        <p>または、駒の矢印をクリックして移動</p>
+      <div className="text-sm text-gray-600 text-center max-w-2xl">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <span>矢印キー: 駒を移動</span>
+          <span>スペース: 候補切り替え</span>
+          <span>U: アンドゥ</span>
+          <span>ESC: リセット</span>
+        </div>
+        <p className="mt-2">または、駒の矢印をクリックして移動</p>
       </div>
     </div>
   );
