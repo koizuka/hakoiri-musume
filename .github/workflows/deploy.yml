@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -103,6 +103,7 @@ jobs:
       run: |
         cd dist-artifact
         tar -xf artifact.tar
+        rm artifact.tar
         
     - name: Checkout gh-pages branch
       uses: actions/checkout@v4
