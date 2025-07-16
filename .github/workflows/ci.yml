@@ -123,7 +123,7 @@ jobs:
 
           export default defineConfig({
             plugins: [react()],
-            base: '/hakoiri-musume/pr-${{ github.event.pull_request.number }}/',
+            base: '/hakoiri-musume/pr/${{ github.event.pull_request.number }}/',
             resolve: {
               alias: {
                 '@': path.resolve(__dirname, './src'),
@@ -144,10 +144,10 @@ jobs:
       - name: Deploy to PR subdirectory
         run: |
           # Create PR-specific directory
-          mkdir -p gh-pages/pr-${{ github.event.pull_request.number }}
+          mkdir -p gh-pages/pr/${{ github.event.pull_request.number }}
           
           # Copy built files to PR directory
-          cp -r dist/* gh-pages/pr-${{ github.event.pull_request.number }}/
+          cp -r dist/* gh-pages/pr/${{ github.event.pull_request.number }}/
           
           # Commit and push
           cd gh-pages
@@ -162,7 +162,7 @@ jobs:
         with:
           script: |
             const pr_number = context.payload.pull_request.number;
-            const preview_url = `https://koizuka.github.io/hakoiri-musume/pr-${pr_number}/`;
+            const preview_url = `https://koizuka.github.io/hakoiri-musume/pr/${pr_number}/`;
             
             // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({

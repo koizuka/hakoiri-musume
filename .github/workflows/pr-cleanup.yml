@@ -25,8 +25,13 @@ jobs:
       - name: Remove PR preview directory
         run: |
           # Remove the PR-specific directory
-          if [ -d "pr-${{ github.event.pull_request.number }}" ]; then
-            rm -rf pr-${{ github.event.pull_request.number }}
+          if [ -d "pr/${{ github.event.pull_request.number }}" ]; then
+            rm -rf pr/${{ github.event.pull_request.number }}
+            
+            # Remove pr directory if empty
+            if [ -d "pr" ] && [ -z "$(ls -A pr)" ]; then
+              rm -rf pr
+            fi
             
             # Commit and push
             git config user.name "github-actions[bot]"
