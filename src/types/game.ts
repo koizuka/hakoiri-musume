@@ -25,6 +25,7 @@ export interface Move {
   from: Position;
   to: Position;
   direction: Direction;
+  keyboardMappingBefore: KeyboardMapping;
 }
 
 export interface KeyboardMapping {
