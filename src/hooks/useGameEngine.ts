@@ -76,6 +76,7 @@ export function useGameEngine() {
       keyboardMapping: resetKeyboardSelection(newKeyboardMapping),
       isWon: false
     });
+    setShowHandles(true); // Show handles on undo
   }, [gameState.pieces, gameState.moveHistory, gameState.isWon]);
 
   const resetGame = useCallback(() => {
@@ -86,6 +87,7 @@ export function useGameEngine() {
       keyboardMapping: resetKeyboardSelection(updateKeyboardMapping(initialPieces)),
       isWon: false
     });
+    setShowHandles(true); // Show handles on reset
   }, []);
 
   const moveSelectedPiece = useCallback((direction: Direction) => {
