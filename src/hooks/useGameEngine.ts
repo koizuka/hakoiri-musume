@@ -17,6 +17,8 @@ export function useGameEngine() {
     };
   });
 
+  const [showHandles, setShowHandles] = useState(true);
+
 
   const movePiece = useCallback((pieceId: string, direction: Direction) => {
     if (!canMovePiece(gameState.pieces, pieceId, direction) || gameState.isWon) {
@@ -91,6 +93,7 @@ export function useGameEngine() {
     if (selectedPieceId) {
       movePiece(selectedPieceId, direction);
     }
+    setShowHandles(true); // Show handles on keyboard move
   }, [gameState.keyboardMapping, movePiece]);
 
   const cycleSelection = useCallback(() => {
@@ -101,7 +104,20 @@ export function useGameEngine() {
       ...prev,
       keyboardMapping: newMapping
     }));
+    setShowHandles(true); // Show handles on keyboard cycle
   }, [gameState.keyboardMapping]);
+
+  const hideHandles = useCallback(() => {
+    setShowHandles(false);
+  }, []);
+
+  const showHandlesFunc = useCallback(() => {
+    setShowHandles(true);
+  }, []);
+
+  const toggleHandles = useCallback(() => {
+    setShowHandles(prev => !prev);
+  }, []);
 
   return {
     gameState,
@@ -109,6 +125,10 @@ export function useGameEngine() {
     undoMove,
     resetGame,
     moveSelectedPiece,
-    cycleSelection
+    cycleSelection,
+    showHandles,
+    hideHandles,
+    showHandlesFunc,
+    toggleHandles
   };
 }

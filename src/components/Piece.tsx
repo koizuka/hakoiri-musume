@@ -9,6 +9,9 @@ interface PieceProps {
   selectedDirections: Direction[];
   onMove: (direction: Direction) => void;
   cellSize: number;
+  showHandles: boolean;
+  onHideHandles: () => void;
+  onShowHandles: () => void;
 }
 
 const PIECE_COLORS = {
@@ -28,7 +31,7 @@ const PIECE_COLORS = {
   apprentice: { backgroundColor: '#f5f5f4', color: 'black', borderColor: 'black' }
 };
 
-export function Piece({ piece, movableDirections, selectedDirections, onMove, cellSize }: PieceProps) {
+export function Piece({ piece, movableDirections, selectedDirections, onMove, cellSize, showHandles, onHideHandles, onShowHandles }: PieceProps) {
   const { position, size, name } = piece;
   
   const colorStyle = PIECE_COLORS[piece.type];
@@ -74,6 +77,7 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
     const touch = e.touches[0];
     setTouchStart({ x: touch.clientX, y: touch.clientY });
     isDragging.current = false;
+    onHideHandles(); // Hide handles on touch
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -122,6 +126,13 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
     isDragging.current = false;
   };
 
+  // Mouse down handler to show handles (avoids touch device conflicts)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onShowHandles();
+  };
+
+
   // For vertical pieces, split the name into individual characters
   const renderText = () => {
     if (isVertical && name.length > 1) {
@@ -152,10 +163,11 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
     >
       {renderText()}
       
-      {movableDirections.map((direction) => (
+      {showHandles && movableDirections.map((direction) => (
         <Handle
           key={direction}
           direction={direction}
