@@ -21,7 +21,7 @@ export function useGameEngine() {
 
 
   const movePiece = useCallback((pieceId: string, direction: Direction) => {
-    if (!canMovePiece(gameState.pieces, pieceId, direction) || gameState.isWon) {
+    if (!canMovePiece(gameState.pieces, pieceId, direction)) {
       return;
     }
 
@@ -51,10 +51,10 @@ export function useGameEngine() {
       keyboardMapping: resetKeyboardSelection(newKeyboardMapping),
       isWon
     });
-  }, [gameState.pieces, gameState.moveHistory, gameState.keyboardMapping, gameState.isWon]);
+  }, [gameState.pieces, gameState.moveHistory, gameState.keyboardMapping]);
 
   const undoMove = useCallback(() => {
-    if (gameState.moveHistory.length === 0 || gameState.isWon) {
+    if (gameState.moveHistory.length === 0) {
       return;
     }
 
@@ -77,7 +77,7 @@ export function useGameEngine() {
       isWon: false
     });
     setShowHandles(true); // Show handles on undo
-  }, [gameState.pieces, gameState.moveHistory, gameState.isWon]);
+  }, [gameState.pieces, gameState.moveHistory]);
 
   const resetGame = useCallback(() => {
     setGameState({
