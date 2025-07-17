@@ -12,7 +12,11 @@ function App() {
     undoMove,
     resetGame,
     moveSelectedPiece,
-    cycleSelection
+    cycleSelection,
+    showHandles,
+    hideHandles,
+    showHandlesFunc,
+    toggleHandles
   } = useGameEngine()
 
   const handleReset = () => {
@@ -50,6 +54,10 @@ function App() {
             onCycleSelection={cycleSelection}
             onUndo={undoMove}
             onReset={handleReset}
+            showHandles={showHandles}
+            onHideHandles={hideHandles}
+            onShowHandles={showHandlesFunc}
+            onToggleHandles={toggleHandles}
           />
         </div>
       </div>

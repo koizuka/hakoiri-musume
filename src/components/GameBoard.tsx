@@ -13,6 +13,10 @@ interface GameBoardProps {
   onCycleSelection: () => void;
   onUndo: () => void;
   onReset: () => void;
+  showHandles: boolean;
+  onHideHandles: () => void;
+  onShowHandles: () => void;
+  onToggleHandles: () => void;
   cellSize?: number;
 }
 
@@ -23,6 +27,10 @@ export function GameBoard({
   onCycleSelection, 
   onUndo,
   onReset,
+  showHandles,
+  onHideHandles,
+  onShowHandles,
+  onToggleHandles,
   cellSize = 80 
 }: GameBoardProps) {
   const boardRef = useRef<HTMLDivElement>(null);
@@ -62,6 +70,11 @@ export function GameBoard({
           event.preventDefault();
           onReset();
           break;
+        case 'h':
+        case 'H':
+          event.preventDefault();
+          onToggleHandles();
+          break;
       }
     };
 
@@ -72,7 +85,7 @@ export function GameBoard({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState.isWon, onKeyboardMove, onCycleSelection, onUndo, onReset]);
+  }, [gameState.isWon, onKeyboardMove, onCycleSelection, onUndo, onReset, onToggleHandles]);
 
   const boardStyle = {
     width: BOARD_WIDTH * cellSize,
@@ -179,6 +192,9 @@ export function GameBoard({
               selectedDirections={selectedDirections}
               onMove={(direction) => onMove(piece.id, direction)}
               cellSize={cellSize}
+              showHandles={showHandles}
+              onHideHandles={onHideHandles}
+              onShowHandles={onShowHandles}
             />
           );
         })}
