@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useGameEngine } from './hooks/useGameEngine'
 import { GameBoard } from './components/GameBoard'
 import { GameControls } from './components/GameControls'
@@ -25,11 +25,15 @@ function App() {
   }
 
   // Show win modal when game is won
+  const prevIsWonRef = useRef(false)
+  
   useEffect(() => {
-    if (gameState.isWon && !showWinModal) {
+    if (gameState.isWon && !prevIsWonRef.current) {
       setShowWinModal(true)
     }
-  }, [gameState.isWon, showWinModal])
+    
+    prevIsWonRef.current = gameState.isWon
+  }, [gameState.isWon])
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
