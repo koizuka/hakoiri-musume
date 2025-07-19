@@ -16,7 +16,8 @@ function App() {
     showHandles,
     hideHandles,
     showHandlesFunc,
-    toggleHandles
+    toggleHandles,
+    clearWinState
   } = useGameEngine()
 
   const handleReset = () => {
@@ -70,7 +71,10 @@ function App() {
         isOpen={showWinModal}
         moves={gameState.moves}
         onReset={handleReset}
-        onClose={() => setShowWinModal(false)}
+        onClose={() => {
+          setShowWinModal(false);
+          clearWinState();
+        }}
       />
     </div>
   )

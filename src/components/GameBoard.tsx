@@ -67,6 +67,8 @@ export function GameBoard({
           onUndo();
           break;
         case 'Escape':
+          // WinModalが表示中の場合はESCキー処理をスキップ
+          if (gameState.isWon) return;
           event.preventDefault();
           onReset();
           break;
