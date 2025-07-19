@@ -15,26 +15,39 @@ export function WinModal({ isOpen, moves, onReset, onClose }: WinModalProps) {
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
+    const isBrowser = typeof window !== 'undefined';
+    if (!isBrowser) return;
+
     if (isOpen) {
       setShouldRender(true);
       // 次のフレームでアニメーションを開始
-      setTimeout(() => setIsVisible(true), 10);
+      const visibilityTimeout = setTimeout(() => setIsVisible(true), 10);
       
       // モーダル内の「閉じる」ボタンにフォーカス
-      setTimeout(() => {
+      const focusTimeout = setTimeout(() => {
         if (closeButtonRef.current) {
           closeButtonRef.current.focus();
         }
       }, 150);
+
+      return () => {
+        clearTimeout(visibilityTimeout);
+        clearTimeout(focusTimeout);
+      };
     } else {
       setIsVisible(false);
       // アニメーション完了後にアンマウント
-      setTimeout(() => setShouldRender(false), 200);
+      const unmountTimeout = setTimeout(() => setShouldRender(false), 200);
+      
+      return () => {
+        clearTimeout(unmountTimeout);
+      };
     }
   }, [isOpen]);
 
   useEffect(() => {
-    if (!shouldRender) return;
+    const isBrowser = typeof document !== 'undefined';
+    if (!isBrowser || !shouldRender) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

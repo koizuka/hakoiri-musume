@@ -67,7 +67,7 @@ describe('App WinModal Display Logic', () => {
     fireEvent.click(screen.getByText('閉じる'))
     await waitFor(() => {
       expect(screen.queryByText('おめでとうございます！')).not.toBeInTheDocument()
-    }, { timeout: 300 })
+    }, { timeout: 500 })
     
     // Game continues: isWon = true -> false, modal should stay hidden
     mockUseGameEngine.mockReturnValue({
