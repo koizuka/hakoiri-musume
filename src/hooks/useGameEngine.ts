@@ -121,6 +121,13 @@ export function useGameEngine() {
     setShowHandles(prev => !prev);
   }, []);
 
+  const clearWinState = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      isWon: false
+    }));
+  }, []);
+
   return {
     gameState,
     movePiece,
@@ -131,6 +138,7 @@ export function useGameEngine() {
     showHandles,
     hideHandles,
     showHandlesFunc,
-    toggleHandles
+    toggleHandles,
+    clearWinState
   };
 }

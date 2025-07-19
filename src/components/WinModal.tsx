@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '../lib/utils';
 
 interface WinModalProps {
@@ -8,11 +9,90 @@ interface WinModalProps {
 }
 
 export function WinModal({ isOpen, moves, onReset, onClose }: WinModalProps) {
-  if (!isOpen) return null;
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      // 次のフレームでアニメーションを開始
+      setTimeout(() => setIsVisible(true), 10);
+      
+      // モーダル内の「閉じる」ボタンにフォーカス
+      setTimeout(() => {
+        if (closeButtonRef.current) {
+          closeButtonRef.current.focus();
+        }
+      }, 150);
+    } else {
+      setIsVisible(false);
+      // アニメーション完了後にアンマウント
+      setTimeout(() => setShouldRender(false), 200);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!shouldRender) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        onClose();
+        return;
+      }
+      
+      if (event.key === 'Tab') {
+        const modal = modalRef.current;
+        if (!modal) return;
+
+        const focusableElements = modal.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+        if (event.shiftKey) {
+          // Shift+Tab: 最初の要素にいる場合は最後の要素へ
+          if (document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          // Tab: 最後の要素にいる場合は最初の要素へ
+          if (document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [shouldRender, onClose]);
+
+  if (!shouldRender) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-xl">
+    <div 
+      className={cn(
+        "fixed inset-0 flex items-center justify-center z-50 transition-opacity duration-200",
+        isVisible ? "opacity-100" : "opacity-0"
+      )}
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+    >
+      <div 
+        ref={modalRef} 
+        className={cn(
+          "bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-xl transition-all duration-200",
+          isVisible 
+            ? "opacity-100 scale-100 translate-y-0" 
+            : "opacity-0 scale-95 translate-y-4"
+        )}
+      >
         <div className="text-center">
           <div className="text-6xl mb-4">🎉</div>
           <h2 className="text-2xl font-bold text-green-600 mb-4">
@@ -35,6 +115,7 @@ export function WinModal({ isOpen, moves, onReset, onClose }: WinModalProps) {
             </button>
             
             <button
+              ref={closeButtonRef}
               onClick={onClose}
               className={cn(
                 'px-6 py-3 rounded-lg font-medium transition-colors',

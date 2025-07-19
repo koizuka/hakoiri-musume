@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import App from './App'
 import { useGameEngine } from './hooks/useGameEngine'
 import type { GameState } from './types/game'
@@ -34,7 +34,8 @@ describe('App WinModal Display Logic', () => {
     showHandles: true,
     hideHandles: vi.fn(),
     showHandlesFunc: vi.fn(),
-    toggleHandles: vi.fn()
+    toggleHandles: vi.fn(),
+    clearWinState: vi.fn()
   }
 
   beforeEach(() => {
@@ -42,7 +43,7 @@ describe('App WinModal Display Logic', () => {
     mockUseGameEngine.mockReturnValue(mockGameEngine)
   })
 
-  it('should handle WinModal display logic correctly', () => {
+  it('should handle WinModal display logic correctly', async () => {
     const { rerender } = render(<App />)
     
     // Initial state: isWon = false, modal should not be visible
@@ -64,7 +65,9 @@ describe('App WinModal Display Logic', () => {
     
     // Close modal: isWon remains true but modal should be hidden
     fireEvent.click(screen.getByText('閉じる'))
-    expect(screen.queryByText('おめでとうございます！')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByText('おめでとうございます！')).not.toBeInTheDocument()
+    }, { timeout: 300 })
     
     // Game continues: isWon = true -> false, modal should stay hidden
     mockUseGameEngine.mockReturnValue({
