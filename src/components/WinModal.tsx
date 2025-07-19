@@ -22,7 +22,7 @@ export function WinModal({ isOpen, moves, onReset, onClose }: WinModalProps) {
             <DialogTitle className="text-2xl font-bold text-green-600 mb-4">
               おめでとうございます！
             </DialogTitle>
-            <p className="text-gray-700 mb-6">
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
               箱入り娘を{moves}手でクリアしました！
             </p>
           </div>
