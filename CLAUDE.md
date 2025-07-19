@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a "hakoiri-musume" (箱入り娘) sliding puzzle game built with React, TypeScript, Vite, and Tailwind CSS. The game implements the classic Japanese sliding puzzle where the goal is to move the daughter (2x2 piece) to the exit at the bottom center of the board.
+This is a "hakoiri-musume" (箱入り娘) sliding puzzle game built with React, TypeScript, Vite, Tailwind CSS, and shadcn/ui. The game implements the classic Japanese sliding puzzle where the goal is to move the daughter (2x2 piece) to the exit at the bottom center of the board.
 
 ## Development Commands
 
@@ -72,6 +72,7 @@ npm run preview
 #### Styling
 
 - Tailwind CSS for responsive design
+- shadcn/ui for UI components (buttons, modals, etc.)
 - Different colors for each piece type
 - Grid-based layout with smooth animations
 
