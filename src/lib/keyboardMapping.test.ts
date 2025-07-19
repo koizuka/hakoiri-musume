@@ -6,7 +6,8 @@ import {
   cycleSelectedPiece,
   cycleAllDirections,
   resetKeyboardSelection,
-  getKeyboardMappingForPiece
+  getKeyboardMappingForPiece,
+  findFillerPiece
 } from './keyboardMapping'
 
 describe('Keyboard Mapping', () => {
@@ -628,6 +629,48 @@ describe('Keyboard Mapping', () => {
       expect(step4Mapping.selectedIndex.down).toBe(0)
       expect(step4Mapping.selectedIndex.left).toBe(0)
       expect(step4Mapping.selectedIndex.right).toBe(0)
+    })
+  })
+
+  describe('findFillerPiece', () => {
+    it('should only return pieces that can actually move in the specified direction', () => {
+      // Minimal test case: piece that looks like it could fill space but cannot actually move
+      const pieces: Piece[] = [
+        {
+          id: 'father',
+          type: 'father',
+          position: { x: 0, y: 1 }, // Moved down from (0,0)
+          size: { width: 1, height: 2 },
+          name: 'father'
+        },
+        {
+          id: 'blocked_piece',
+          type: 'maid',
+          position: { x: 1, y: 1 }, // Would overlap if moved left, but cannot move
+          size: { width: 1, height: 2 },
+          name: 'blocked piece'
+        },
+        {
+          id: 'movable_piece',
+          type: 'apprentice',
+          position: { x: 2, y: 0 }, // Can actually move left
+          size: { width: 1, height: 1 },
+          name: 'movable piece'
+        },
+        {
+          id: 'wall',
+          type: 'servant',
+          position: { x: 0, y: 0 }, // Blocks blocked_piece from moving left
+          size: { width: 1, height: 3 },
+          name: 'wall'
+        }
+      ]
+
+      const result = findFillerPiece(pieces, 'father', 'down', 'left')
+      
+      // Expected: Should return movable_piece (or null) but NOT blocked_piece
+      // Current broken behavior: Returns blocked_piece because it only checks position overlap
+      expect(result).not.toBe('blocked_piece')
     })
   })
 })
