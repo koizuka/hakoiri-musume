@@ -44,14 +44,6 @@ function App() {
         </h1>
         
         <div className="flex flex-col items-center gap-8">
-          <GameControls
-            moves={gameState.moves}
-            canUndo={gameState.moveHistory.length > 0}
-            isWon={gameState.isWon}
-            onUndo={undoMove}
-            onReset={handleReset}
-          />
-          
           <GameBoard
             gameState={gameState}
             onMove={movePiece}
@@ -64,6 +56,25 @@ function App() {
             onShowHandles={showHandlesFunc}
             onToggleHandles={toggleHandles}
           />
+          
+          <GameControls
+            moves={gameState.moves}
+            canUndo={gameState.moveHistory.length > 0}
+            isWon={gameState.isWon}
+            onUndo={undoMove}
+            onReset={handleReset}
+          />
+          
+          {/* Instructions */}
+          <div className="text-sm text-gray-600 text-center max-w-2xl">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+              <span>矢印キー: 駒を移動</span>
+              <span>スペース: 候補切り替え</span>
+              <span>U: アンドゥ</span>
+              <span>ESC: リセット</span>
+            </div>
+            <p className="mt-2">または、駒の矢印をクリックして移動</p>
+          </div>
         </div>
       </div>
 
