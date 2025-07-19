@@ -26,20 +26,6 @@ export function GameControls({ moves, canUndo, isWon, onUndo, onReset }: GameCon
 
       <div className="flex items-center justify-center space-x-8">
         <Button
-          onClick={onUndo}
-          disabled={!canUndo}
-          variant={canUndo ? "default" : "outline"}
-          size="lg"
-          className={cn(
-            "mr-4",
-            canUndo ? "border-2 border-black" : ""
-          )}
-        >
-          <span>↶</span>
-          アンドゥ (U)
-        </Button>
-
-        <Button
           onClick={onReset}
           variant="default"
           size="lg"
@@ -47,6 +33,19 @@ export function GameControls({ moves, canUndo, isWon, onUndo, onReset }: GameCon
         >
           <span>⟲</span>
           リセット
+        </Button>
+
+        <Button
+          onClick={onUndo}
+          disabled={!canUndo}
+          variant={canUndo ? "default" : "outline"}
+          size="lg"
+          className={cn(
+            canUndo ? "border-2 border-black" : ""
+          )}
+        >
+          <span>↶</span>
+          アンドゥ (U)
         </Button>
       </div>
     </div>
