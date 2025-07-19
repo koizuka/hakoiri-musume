@@ -48,3 +48,6 @@ temp
 
 # Optional stylelint cache
 .stylelintcache
+
+# TypeScript build cache
+*.tsbuildinfo
