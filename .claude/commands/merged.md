@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git checkout:*), Bash(git pull:*), Bash(git remote prune:*), Bash(git branch:*), Bash(git status:*), Bash(git log:*)
+allowed-tools: Bash(git checkout:*), Bash(git pull:*), Bash(git remote prune:*), Bash(git branch:*), Bash(git status:*), Bash(git log:*), Bash(git switch:*)
 description: Clean up after PR merge - switch to main branch and update
 ---
 
