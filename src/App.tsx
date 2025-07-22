@@ -3,6 +3,7 @@ import { useGameEngine } from './hooks/useGameEngine'
 import { GameBoard } from './components/GameBoard'
 import { GameControls } from './components/GameControls'
 import { WinModal } from './components/WinModal'
+import { Kbd } from './components/Kbd'
 
 function App() {
   const [showWinModal, setShowWinModal] = useState(false)
@@ -67,11 +68,23 @@ function App() {
           
           {/* Instructions */}
           <div className="text-sm text-gray-600 text-center max-w-2xl">
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-              <span>矢印キー: 駒を移動</span>
-              <span>スペース: 候補切り替え</span>
-              <span>U: アンドゥ</span>
-              <span>ESC: リセット</span>
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
+              <span className="flex items-center gap-2">
+                <Kbd>↑</Kbd><Kbd>↓</Kbd><Kbd>←</Kbd><Kbd>→</Kbd>
+                <span>駒を移動</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <Kbd>Space</Kbd>
+                <span>候補切り替え</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <Kbd>U</Kbd>
+                <span>アンドゥ</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <Kbd>ESC</Kbd>
+                <span>リセット</span>
+              </span>
             </div>
             <p className="mt-2">または、駒の矢印をクリックして移動</p>
           </div>
