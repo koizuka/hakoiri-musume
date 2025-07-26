@@ -4,6 +4,7 @@ import { GameBoard } from './components/GameBoard'
 import { GameControls } from './components/GameControls'
 import { WinModal } from './components/WinModal'
 import { Kbd } from './components/Kbd'
+import { Github } from 'lucide-react'
 
 function App() {
   const [showWinModal, setShowWinModal] = useState(false)
@@ -38,9 +39,9 @@ function App() {
   }, [gameState.isWon])
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 transition-colors">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-gray-100">
           箱入り娘
         </h1>
         
@@ -67,7 +68,7 @@ function App() {
           />
           
           {/* Instructions */}
-          <div className="text-sm text-gray-600 text-center max-w-2xl">
+          <div className="text-sm text-gray-600 dark:text-gray-300 text-center max-w-2xl">
             <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2">
               <span className="flex items-center gap-2">
                 <Kbd>↑</Kbd><Kbd>↓</Kbd><Kbd>←</Kbd><Kbd>→</Kbd>
@@ -100,6 +101,19 @@ function App() {
           clearWinState();
         }}
       />
+
+      {/* GitHub Link */}
+      <footer className="fixed bottom-4 right-4">
+        <a
+          href="https://github.com/koizuka/hakoiri-musume"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+        >
+          <Github className="w-4 h-4" />
+          <span>GitHub</span>
+        </a>
+      </footer>
     </div>
   )
 }

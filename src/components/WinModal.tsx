@@ -19,7 +19,7 @@ export function WinModal({ isOpen, moves, onReset, onClose }: WinModalProps) {
         <DialogHeader>
           <div className="text-center">
             <div className="text-6xl mb-4">🎉</div>
-            <DialogTitle className="text-2xl font-bold text-green-600 mb-4">
+            <DialogTitle className="text-2xl font-bold text-green-600 dark:text-green-400 mb-4">
               おめでとうございます！
             </DialogTitle>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
