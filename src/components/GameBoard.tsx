@@ -108,7 +108,7 @@ export function GameBoard({
       <div
         ref={boardRef}
         className={cn(
-          'relative bg-stone-100 border-4 border-black',
+          'relative bg-stone-100 dark:bg-stone-800 border-4 border-black',
           'focus:outline-none',
           'cursor-pointer'
         )}
@@ -172,7 +172,7 @@ export function GameBoard({
           className="absolute flex items-center justify-center z-0"
           style={exitStyle}
         >
-          <span className="text-emerald-800 font-bold text-sm">出口</span>
+          <span className="text-emerald-800 dark:text-emerald-300 font-bold text-sm">出口</span>
         </div>
 
         {/* Pieces */}
