@@ -162,6 +162,7 @@ jobs:
           path: gh-pages
 
       - name: Deploy to PR subdirectory
+        id: deploy
         run: |
           # Create PR-specific directory
           mkdir -p gh-pages/pr/${{ github.event.pull_request.number }}
@@ -174,10 +175,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Deploy PR #${{ github.event.pull_request.number }} preview"
-          git push
+          
+          # Check if there are any changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to deploy - preview is already up to date"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "Deploy PR #${{ github.event.pull_request.number }} preview"
+            git push
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Wait for GitHub Pages deployment
+        if: steps.deploy.outputs.has_changes == 'true'
         run: sleep 60
 
       - name: Update PR Comment with Preview URL
