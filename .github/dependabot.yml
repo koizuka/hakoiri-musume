@@ -11,6 +11,48 @@ updates:
     commit-message:
       prefix: "npm"
       include: "scope"
+    groups:
+      # React関連のパッケージ
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+          - "@testing-library/react"
+      # Tailwind CSS関連
+      tailwindcss:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "tailwindcss-*"
+      # ESLint関連
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "typescript-eslint"
+      # Radix UI関連
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      # TypeScript関連
+      typescript:
+        patterns:
+          - "typescript"
+          - "typescript-eslint"
+      # Vite関連
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+      # Testing関連
+      testing:
+        patterns:
+          - "vitest"
+          - "@testing-library/*"
+          - "jsdom"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
