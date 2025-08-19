@@ -27,9 +27,12 @@ export function GameControls({ moves, canUndo, isWon, onUndo, onReset }: GameCon
       <div className="flex items-center justify-center space-x-8">
         <Button
           onClick={onReset}
-          variant="default"
+          disabled={!canUndo}
+          variant={canUndo ? "default" : "outline"}
           size="lg"
-          className="border-2 border-black dark:border-gray-300 bg-white dark:bg-gray-700 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600"
+          className={cn(
+            canUndo ? "border-2 border-black dark:border-gray-300 bg-white dark:bg-gray-700 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600" : "dark:border-gray-600 dark:text-gray-400"
+          )}
         >
           <span>⟲</span>
           リセット
