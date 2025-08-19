@@ -25,7 +25,7 @@ jobs:
     outputs:
       app: ${{ steps.filter.outputs.app }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: dorny/paths-filter@v3
         id: filter
@@ -53,7 +53,7 @@ jobs:
     if: needs.changes.outputs.app == 'true' || github.event_name == 'workflow_dispatch'
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -106,7 +106,7 @@ jobs:
         rm artifact.tar
         
     - name: Checkout gh-pages branch
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         ref: gh-pages
         path: gh-pages
