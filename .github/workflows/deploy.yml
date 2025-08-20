@@ -125,5 +125,11 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add .
-        git commit -m "Deploy production build from main branch"
-        git push
+        
+        # Check if there are any changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to deploy - site is already up to date"
+        else
+          git commit -m "Deploy production build from main branch"
+          git push
+        fi
