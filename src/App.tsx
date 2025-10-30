@@ -29,12 +29,13 @@ function App() {
 
   // Show win modal when game is won
   const prevIsWonRef = useRef(false)
-  
+
   useEffect(() => {
     if (gameState.isWon && !prevIsWonRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowWinModal(true)
     }
-    
+
     prevIsWonRef.current = gameState.isWon
   }, [gameState.isWon])
 
