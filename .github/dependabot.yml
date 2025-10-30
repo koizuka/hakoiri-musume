@@ -8,6 +8,8 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "npm"
       include: "scope"
@@ -62,6 +64,8 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "github-actions"
       include: "scope"
