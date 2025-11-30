@@ -129,152 +129,17 @@ jobs:
             },
           })
           EOF
-          
+
           # Build with the PR-specific config
           npx vite build --config vite.config.pr.ts
 
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Deploy PR Preview
+        uses: koizuka/pr-preview-action@v1
         with:
-          ref: gh-pages
-          path: gh-pages
-
-      # Skip comment steps if preview comment already exists (subsequent commits)
-      - name: Check for existing preview comment
-        id: check_comment
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
-        with:
-          script: |
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-            });
-
-            const existingComment = comments.find(comment =>
-              comment.user.type === 'Bot' &&
-              comment.body.includes('<!-- PR Preview Comment -->')
-            );
-
-            core.setOutput('exists', existingComment ? 'true' : 'false');
-            console.log(`Existing preview comment: ${existingComment ? 'found' : 'not found'}`);
-
-      - name: Deploy to PR subdirectory
-        id: deploy
-        run: |
-          # Create PR-specific directory
-          mkdir -p gh-pages/pr/${{ github.event.pull_request.number }}
-          
-          # Copy built files to PR directory
-          cp -r dist/* gh-pages/pr/${{ github.event.pull_request.number }}/
-          
-          # Commit and push
-          cd gh-pages
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          
-          # Check if there are any changes to commit
-          if git diff --staged --quiet; then
-            echo "No changes to deploy - preview is already up to date"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            git commit -m "Deploy PR #${{ github.event.pull_request.number }} preview"
-            git push
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Initial PR Comment
-        if: steps.deploy.outputs.has_changes == 'true' && steps.check_comment.outputs.exists != 'true'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
-        with:
-          script: |
-            const pr_number = context.payload.pull_request.number;
-            
-            // Create initial "in progress" comment
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr_number,
-              body: `<!-- PR Preview Comment -->
-            ## 🚧 Preview Deployment in Progress...
-            
-            Your preview is being deployed. Please wait a moment.
-            
-            > This comment will be updated with the preview URL once deployment is complete.
-            `,
-            });
-
-      - name: Wait for GitHub Pages deployment
-        if: steps.deploy.outputs.has_changes == 'true' && steps.check_comment.outputs.exists != 'true'
-        run: |
-          PREVIEW_URL="https://koizuka.github.io/hakoiri-musume/pr/${{ github.event.pull_request.number }}/"
-          MAX_ATTEMPTS=60  # 最大5分（5秒 × 60回）
-          ATTEMPT=0
-
-          echo "Waiting for preview to be available at: $PREVIEW_URL"
-
-          until [ $ATTEMPT -ge $MAX_ATTEMPTS ]; do
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$PREVIEW_URL")
-
-            if [ "$HTTP_CODE" = "200" ]; then
-              echo "Preview is available! (HTTP $HTTP_CODE)"
-              exit 0
-            fi
-
-            ATTEMPT=$((ATTEMPT + 1))
-            echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: HTTP $HTTP_CODE - waiting 5s..."
-            sleep 5
-          done
-
-          echo "Warning: Preview may not be ready yet (last status: $HTTP_CODE)"
-          # タイムアウトしてもコメントは投稿する
-
-      - name: Update PR Comment with Preview URL
-        if: steps.deploy.outputs.has_changes == 'true' && steps.check_comment.outputs.exists != 'true'
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
-        with:
-          script: |
-            const pr_number = context.payload.pull_request.number;
-            const preview_url = `https://koizuka.github.io/hakoiri-musume/pr/${pr_number}/`;
-            
-            // Find existing comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr_number,
-            });
-            
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && 
-              comment.body.includes('<!-- PR Preview Comment -->')
-            );
-            
-            const commentBody = `<!-- PR Preview Comment -->
-            ## 🚀 Preview Deployed!
-            
-            Your preview is available at: ${preview_url}
-            
-            > This preview will be automatically removed when the PR is closed.
-            `;
-            
-            if (botComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: commentBody,
-              });
-            } else {
-              // Create new comment (fallback)
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr_number,
-                body: commentBody,
-              });
-            }
+          action: deploy
+          source-dir: dist
+          base-url: https://koizuka.github.io/hakoiri-musume
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   # Summary job that provides a single status check for branch protection
   ci-summary:
