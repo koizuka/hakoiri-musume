@@ -134,7 +134,7 @@ jobs:
           npx vite build --config vite.config.pr.ts
 
       - name: Deploy PR Preview
-        uses: koizuka/pr-preview-action@v1
+        uses: koizuka/pr-preview-action@e7366d355cc0c6a1b7d96965f1d3c82a82287297 # v1.0.0
         with:
           action: deploy
           source-dir: dist
