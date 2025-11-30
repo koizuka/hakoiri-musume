@@ -228,7 +228,7 @@ jobs:
           done
 
           echo "Warning: Preview may not be ready yet (last status: $HTTP_CODE)"
-          # タイムアウトしてもコメントは投稿する（従来の挙動を維持）
+          # タイムアウトしてもコメントは投稿する
 
       - name: Update PR Comment with Preview URL
         if: steps.deploy.outputs.has_changes == 'true' && steps.check_comment.outputs.exists != 'true'
