@@ -10,7 +10,7 @@
 
 箱入り娘は、4×5の盤面で駒を滑らせて娘（2×2の大きな駒）を下部の出口まで移動させるパズルゲームです。
 
-<img width="509" height="668" alt="image" src="https://github.com/user-attachments/assets/7c483a9e-333a-4fb7-8e76-4243fffeac7d" />
+<img width="639" height="792" alt="image" src="https://github.com/user-attachments/assets/02d7a5fb-ad8f-4f38-bad9-f2abebd6006b" />
 
 ### 駒の種類
 
