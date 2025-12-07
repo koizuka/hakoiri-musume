@@ -47,7 +47,7 @@ describe('App WinModal Display Logic', () => {
     const { rerender } = render(<App />)
     
     // Initial state: isWon = false, modal should not be visible
-    expect(screen.queryByText('おめでとうございます！')).not.toBeInTheDocument()
+    expect(screen.queryByText('成功でございます')).not.toBeInTheDocument()
 
     // First win: isWon = false -> true, modal should appear
     mockUseGameEngine.mockReturnValue({
@@ -57,18 +57,18 @@ describe('App WinModal Display Logic', () => {
         isWon: true
       }
     })
-    
+
     rerender(<App />)
-    expect(screen.getByText('おめでとうございます！')).toBeInTheDocument()
+    expect(screen.getByText('成功でございます')).toBeInTheDocument()
     expect(screen.getByText('閉じる')).toBeInTheDocument()
-    expect(screen.getByText('もう一度プレイ')).toBeInTheDocument()
-    
+    expect(screen.getByText('再挑戦')).toBeInTheDocument()
+
     // Close modal: isWon remains true but modal should be hidden
     fireEvent.click(screen.getByText('閉じる'))
     await waitFor(() => {
-      expect(screen.queryByText('おめでとうございます！')).not.toBeInTheDocument()
+      expect(screen.queryByText('成功でございます')).not.toBeInTheDocument()
     }, { timeout: 500 })
-    
+
     // Game continues: isWon = true -> false, modal should stay hidden
     mockUseGameEngine.mockReturnValue({
       ...mockGameEngine,
@@ -77,10 +77,10 @@ describe('App WinModal Display Logic', () => {
         isWon: false
       }
     })
-    
+
     rerender(<App />)
-    expect(screen.queryByText('おめでとうございます！')).not.toBeInTheDocument()
-    
+    expect(screen.queryByText('成功でございます')).not.toBeInTheDocument()
+
     // Second win: isWon = false -> true, modal should appear again
     mockUseGameEngine.mockReturnValue({
       ...mockGameEngine,
@@ -89,9 +89,9 @@ describe('App WinModal Display Logic', () => {
         isWon: true
       }
     })
-    
+
     rerender(<App />)
-    expect(screen.getByText('おめでとうございます！')).toBeInTheDocument()
+    expect(screen.getByText('成功でございます')).toBeInTheDocument()
   })
 
   it('should show WinModal when isWon is true on initial render', () => {
@@ -106,12 +106,12 @@ describe('App WinModal Display Logic', () => {
     })
 
     render(<App />)
-    
+
     // Should show modal because prevIsWonRef.current starts as false
-    expect(screen.getByText('おめでとうございます！')).toBeInTheDocument()
+    expect(screen.getByText('成功でございます')).toBeInTheDocument()
   })
 
-  it('should call resetGame when "もう一度プレイ" button is clicked', () => {
+  it('should call resetGame when "再挑戦" button is clicked', () => {
     mockUseGameEngine.mockReturnValue({
       ...mockGameEngine,
       gameState: {
@@ -121,9 +121,9 @@ describe('App WinModal Display Logic', () => {
     })
 
     render(<App />)
-    
-    fireEvent.click(screen.getByText('もう一度プレイ'))
-    
+
+    fireEvent.click(screen.getByText('再挑戦'))
+
     expect(mockGameEngine.resetGame).toHaveBeenCalled()
   })
 })

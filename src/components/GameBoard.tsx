@@ -108,71 +108,92 @@ export function GameBoard({
       <div
         ref={boardRef}
         className={cn(
-          'relative bg-stone-100 dark:bg-stone-800 border-4 border-black',
-          'focus:outline-none',
+          'relative wood-texture',
+          'focus:outline-none focus:ring-2 focus:ring-kincha/50',
           'cursor-pointer'
         )}
         style={{
           ...boardStyle,
-          borderTop: '4px solid #374151',
-          borderLeft: '4px solid #374151', 
-          borderRight: '4px solid #374151',
+          // 漆塗り風の黒枠
+          borderTop: '5px solid',
+          borderLeft: '5px solid',
+          borderRight: '5px solid',
           borderBottom: 'none',
-          borderTopLeftRadius: '12px',
-          borderTopRightRadius: '12px',
-          borderBottomLeftRadius: '12px',
-          borderBottomRightRadius: '12px'
+          borderImage: 'linear-gradient(180deg, #2A1810 0%, #0D0500 40%, #1A0F00 70%, #2A1810 100%) 1',
+          borderTopLeftRadius: '10px',
+          borderTopRightRadius: '10px',
+          borderBottomLeftRadius: '10px',
+          borderBottomRightRadius: '10px',
+          // 深みのある影
+          boxShadow: `
+            inset 0 2px 4px rgba(255, 255, 255, 0.05),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 2px 8px rgba(0, 0, 0, 0.2)
+          `
         }}
         tabIndex={0}
         role="grid"
         aria-label="Game board"
       >
 
-        {/* Bottom border sections */}
-        {/* Left section of bottom border - thick */}
+        {/* Bottom border sections - 漆塗り風 */}
+        {/* Left section of bottom border */}
         <div
           className="absolute"
           style={{
-            left: -4 + 12,
-            bottom: -4,
-            width: EXIT_POSITION.x * cellSize + leftOffset + 4 - 12,
-            height: '4px',
-            backgroundColor: '#374151',
-            borderBottomLeftRadius: '12px'
+            left: -5 + 10,
+            bottom: -5,
+            width: EXIT_POSITION.x * cellSize + leftOffset + 5 - 10,
+            height: '5px',
+            background: 'linear-gradient(180deg, #2A1810 0%, #0D0500 50%, #1A0F00 100%)',
+            borderBottomLeftRadius: '10px'
           }}
         />
-        
-        {/* Exit section of bottom border - thin */}
+
+        {/* Exit section - 暖簾（のれん）風の出口 */}
         <div
           className="absolute"
           style={{
             left: EXIT_POSITION.x * cellSize + leftOffset,
-            bottom: -1,
+            bottom: -2,
             width: EXIT_SIZE.width * cellSize,
-            height: '1px',
-            backgroundColor: '#374151'
+            height: '2px',
+            background: 'linear-gradient(90deg, var(--color-kincha) 0%, #D4A04A 50%, var(--color-kincha) 100%)',
+            opacity: 0.6
           }}
         />
-        
-        {/* Right section of bottom border - thick */}
+
+        {/* Right section of bottom border */}
         <div
           className="absolute"
           style={{
             left: (EXIT_POSITION.x + EXIT_SIZE.width) * cellSize + leftOffset,
-            bottom: -4,
-            width: BOARD_WIDTH * cellSize - (EXIT_POSITION.x + EXIT_SIZE.width) * cellSize - leftOffset + 4 - 12,
-            height: '4px',
-            backgroundColor: '#374151',
-            borderBottomRightRadius: '12px'
+            bottom: -5,
+            width: BOARD_WIDTH * cellSize - (EXIT_POSITION.x + EXIT_SIZE.width) * cellSize - leftOffset + 5 - 10,
+            height: '5px',
+            background: 'linear-gradient(180deg, #2A1810 0%, #0D0500 50%, #1A0F00 100%)',
+            borderBottomRightRadius: '10px'
           }}
         />
-        
-        {/* Exit area */}
+
+        {/* Exit area - 出口エリア */}
         <div
           className="absolute flex items-center justify-center z-0"
           style={exitStyle}
         >
-          <span className="text-emerald-800 dark:text-emerald-300 font-bold text-sm">出口</span>
+          <span
+            className="font-bold tracking-widest"
+            style={{
+              fontFamily: 'var(--font-mincho)',
+              fontSize: '0.85rem',
+              color: 'var(--color-kincha)',
+              textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+              letterSpacing: '0.2em'
+            }}
+          >
+            出口
+          </span>
         </div>
 
         {/* Pieces */}

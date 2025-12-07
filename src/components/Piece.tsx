@@ -14,22 +14,58 @@ interface PieceProps {
   onShowHandles: () => void;
 }
 
+// 和の伝統色 - Japanese Traditional Colors for pieces
 const PIECE_COLORS = {
-  // Main character - bright accent color
-  daughter: { backgroundColor: '#fef3c7', color: 'black', borderColor: 'black' },
-  
-  // Family members - light warm tones
-  father: { backgroundColor: '#e0e7ff', color: 'black', borderColor: 'black' },
-  mother: { backgroundColor: '#f3e8ff', color: 'black', borderColor: 'black' },
-  
-  // Servants - light cool tones
-  servant: { backgroundColor: '#ccfbf1', color: 'black', borderColor: 'black' },
-  maid: { backgroundColor: '#cffafe', color: 'black', borderColor: 'black' },
-  manager: { backgroundColor: '#dbeafe', color: 'black', borderColor: 'black' },
-  
-  // Apprentices - light neutral tone
-  apprentice: { backgroundColor: '#f5f5f4', color: 'black', borderColor: 'black' }
-};
+  // 娘 - 紅緋（べにひ）主役は華やかな紅色
+  daughter: {
+    backgroundColor: 'var(--color-benihi)',
+    color: '#FFF8F0',
+    borderColor: 'var(--color-benihi-dark)',
+    isSpecial: true
+  },
+
+  // 父 - 藍鉄（あいてつ）落ち着いた藍色
+  father: {
+    backgroundColor: 'var(--color-aitetsu)',
+    color: '#F5F1EB',
+    borderColor: '#2A3547'
+  },
+
+  // 母 - 紅藤（べにふじ）柔らかい藤色
+  mother: {
+    backgroundColor: 'var(--color-benifuji)',
+    color: '#2D2A2E',
+    borderColor: '#9A7A95'
+  },
+
+  // 下男 - 若竹色（わかたけいろ）清々しい竹の緑
+  servant: {
+    backgroundColor: 'var(--color-wakatake)',
+    color: '#1A2E24',
+    borderColor: '#3D8B69'
+  },
+
+  // 女中 - 浅葱色（あさぎいろ）涼しげな青緑
+  maid: {
+    backgroundColor: 'var(--color-asagi)',
+    color: '#F5F1EB',
+    borderColor: '#306A72'
+  },
+
+  // 番頭 - 紺青（こんじょう）重厚な紺色
+  manager: {
+    backgroundColor: 'var(--color-konjo)',
+    color: '#F5F1EB',
+    borderColor: '#0F2840'
+  },
+
+  // 小僧 - 白練（しろねり）素朴な白
+  apprentice: {
+    backgroundColor: 'var(--color-shironeri)',
+    color: '#3A3535',
+    borderColor: '#C5C0B5'
+  }
+} as const;
 
 export function Piece({ piece, movableDirections, selectedDirections, onMove, cellSize, showHandles, onHideHandles, onShowHandles }: PieceProps) {
   const { position, size, name } = piece;
@@ -147,26 +183,49 @@ export function Piece({ piece, movableDirections, selectedDirections, onMove, ce
     return <span style={{ fontSize }}>{name}</span>;
   };
 
+  // 娘の駒には特別な金箔グロー効果を適用
+  const isSpecialPiece = 'isSpecial' in colorStyle && colorStyle.isSpecial;
+
   return (
     <div
       className={cn(
-        'absolute border-2 shadow-md',
+        'absolute border-[3px]',
         'flex items-center justify-center font-bold',
         'transition-all duration-200 ease-in-out',
-        'touch-none' // Prevent default touch behaviors
+        'touch-none', // Prevent default touch behaviors
+        isSpecialPiece && 'kinpaku-glow'
       )}
       style={{
         ...style,
-        fontFamily: 'serif, "Hiragino Mincho Pro", "Yu Mincho", "MS Mincho", serif',
-        borderRadius: '12px'
+        fontFamily: 'var(--font-mincho)',
+        borderRadius: '8px',
+        // 漆塗り風の光沢感
+        boxShadow: isSpecialPiece
+          ? '0 0 20px rgba(199, 128, 45, 0.3), 0 0 40px rgba(199, 128, 45, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)'
+          : 'inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.1), 0 3px 8px rgba(0, 0, 0, 0.25)',
+        // 微かなグラデーションで立体感
+        backgroundImage: isSpecialPiece
+          ? 'linear-gradient(145deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)'
+          : 'linear-gradient(145deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)',
+        backgroundBlendMode: 'overlay'
       }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
     >
-      {renderText()}
-      
+      {/* 駒の文字 */}
+      <span
+        style={{
+          textShadow: isSpecialPiece
+            ? '0 1px 2px rgba(0,0,0,0.3), 0 0 8px rgba(199, 128, 45, 0.3)'
+            : '0 1px 1px rgba(0,0,0,0.2)',
+          letterSpacing: '0.05em'
+        }}
+      >
+        {renderText()}
+      </span>
+
       {showHandles && movableDirections.map((direction) => (
         <Handle
           key={direction}
