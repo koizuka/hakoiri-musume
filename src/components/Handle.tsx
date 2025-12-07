@@ -65,34 +65,51 @@ export function Handle({ direction, isSelected, onClick, className }: HandleProp
       className={cn(
         HANDLE_STYLES[direction],
         'cursor-pointer transition-all duration-200 ease-in-out',
-        'shadow-lg',
-        isSelected ? 'border-2 border-amber-600' : 'border-2 border-stone-400',
         'flex items-center justify-center',
-        'font-black text-lg',
-        isSelected ? 'text-stone-700' : 'text-stone-600',
+        'font-bold',
         'z-20',
-        isSelected 
-          ? 'bg-amber-200 hover:bg-amber-300 opacity-100'
-          : 'bg-stone-200 hover:bg-stone-300 active:bg-stone-400 opacity-100',
+        'rounded-full',
         className
       )}
-      style={getPositionStyle()}
+      style={{
+        ...getPositionStyle(),
+        // 選択時は金茶、通常時は銀鼠
+        backgroundColor: isSelected ? 'var(--color-kincha)' : 'var(--color-ginnezu)',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderColor: isSelected ? '#9A6520' : '#6B7280',
+        color: isSelected ? '#FFF8F0' : '#F5F5F5',
+        // 和風の柔らかい影
+        boxShadow: isSelected
+          ? '0 0 12px rgba(199, 128, 45, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+          : '0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
+        opacity: isSelected ? 1 : 0.85
+      }}
       onClick={onClick}
       onTouchStart={(e) => {
         e.stopPropagation();
         onClick();
       }}
+      onMouseEnter={(e) => {
+        const target = e.currentTarget;
+        target.style.transform = getPositionStyle().transform + ' scale(1.1)';
+        target.style.opacity = '1';
+      }}
+      onMouseLeave={(e) => {
+        const target = e.currentTarget;
+        target.style.transform = getPositionStyle().transform || '';
+        target.style.opacity = isSelected ? '1' : '0.85';
+      }}
       aria-label={`Move ${direction}`}
     >
-      <span 
-        className={cn(
-          'transition-opacity duration-200',
-          isSelected ? 'opacity-100' : 'opacity-40'
-        )}
+      <span
         style={{
-          fontWeight: '900',
-          textShadow: '1px 1px 0px rgba(0,0,0,0.5)',
-          fontSize: '1.25rem'
+          fontWeight: '700',
+          textShadow: isSelected
+            ? '0 1px 2px rgba(0, 0, 0, 0.4)'
+            : '0 1px 1px rgba(0, 0, 0, 0.3)',
+          fontSize: '1.1rem',
+          opacity: isSelected ? 1 : 0.7
         }}
       >
         {ARROW_ICONS[direction]}
