@@ -1,5 +1,5 @@
 ---
-description: Merge safe dependabot PRs one by one efficiently
+description: Merge safe dependabot PRs efficiently with auto-merge
 allowed-tools: Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr merge:*), Bash(gh pr comment:*), Bash(gh pr checks:*), Bash(gh pr update-branch:*)
 ---
 
@@ -7,19 +7,35 @@ Merge all safe dependabot PRs efficiently and automatically:
 
 ## Process
 
-1. **List PRs**: Get all dependabot PRs with `gh pr list --author app/dependabot`
+1. **List PRs**: Get all dependabot PRs with `gh pr list --author app/dependabot --json number,title`
 
-2. **Create todo list**: Create a todo list with all PRs to track progress
+2. **Categorize PRs**:
+   - **Safe**: Patch/minor updates of known safe packages (see Safety criteria below)
+   - **Needs review**: Major version updates, React updates, unknown packages
 
-3. **For each PR** (process one at a time, in order):
-   - Set auto-merge: `gh pr merge <PR#> --squash --auto`
-   - Update branch: Try `gh pr update-branch <PR#>`
-     - If conflicts occur, use `gh pr comment <PR#> --body "@dependabot recreate"`
-   - Watch CI: `gh pr checks <PR#> --watch` until all checks pass
-   - Wait for auto-merge to complete
-   - Mark todo as completed and move to next PR
+3. **Ask user about non-safe PRs**: If there are major version updates or other risky PRs, ask user whether to include them
 
-4. **Verify completion**: `gh pr list --author app/dependabot` should show no results
+4. **Create todo list**: Create a todo list with approved PRs to track progress
+
+5. **Set auto-merge on approved PRs**:
+   ```bash
+   for pr in <approved PR numbers>; do
+     gh pr merge $pr --squash --auto
+   done
+   ```
+
+6. **Kick off the first PR**: Run `gh pr update-branch` on one PR to start the chain
+
+7. **Monitor until all PRs are processed**:
+   - Periodically check: `gh pr list --author app/dependabot --json number,state,mergeable`
+   - For each remaining PR, check status with `gh pr view <PR#> --json state,mergeStateStatus`
+   - Handle issues as they arise:
+     - **Conflicts**: `gh pr comment <PR#> --body "@dependabot recreate"`
+     - **CI failures**: Report to user for manual review
+     - **Blocked**: May need manual `gh pr update-branch`
+   - Continue until no open PRs remain
+
+8. **Verify completion**: `gh pr list --author app/dependabot` should show no results (or only skipped PRs)
 
 ## Safety criteria
 
@@ -41,6 +57,9 @@ Skip or ask user about:
 ## Notes
 
 - Repository requires PRs to be up-to-date with main before merging
-- Use `gh pr update-branch` instead of asking dependabot to rebase (faster)
-- Process PRs sequentially - each merge invalidates other PRs
-- Use `gh pr checks --watch` to efficiently wait for CI completion
+- Use `gh pr update-branch` instead of asking dependabot to rebase (faster for initial kick-off)
+
+## Optimization rationale
+
+- **Pre-setting auto-merge on approved PRs**: Once auto-merge is enabled, GitHub automatically merges each PR when CI passes and the branch is up-to-date. Dependabot automatically rebases remaining PRs after each merge, creating a chain reaction.
+- **Minimal intervention**: After kicking off the first PR, we only need to monitor and handle exceptions (conflicts, CI failures). The rest is automatic.
