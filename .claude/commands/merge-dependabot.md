@@ -1,6 +1,6 @@
 ---
 description: Merge safe dependabot PRs efficiently with auto-merge
-allowed-tools: Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr merge:*), Bash(gh pr comment:*), Bash(gh pr checks:*), Bash(gh pr update-branch:*)
+allowed-tools: Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh pr merge:*), Bash(gh pr comment:*), Bash(gh pr checks:*), Bash(gh pr update-branch:*), Bash(git pull)
 ---
 
 Merge all safe dependabot PRs efficiently and automatically:
@@ -18,35 +18,33 @@ Merge all safe dependabot PRs efficiently and automatically:
 4. **Create todo list**: Create a todo list with approved PRs to track progress
 
 5. **Set auto-merge on approved PRs**:
+
    ```bash
-   for pr in <approved PR numbers>; do
-     gh pr merge $pr --squash --auto
-   done
+   echo "<approved PR numbers>" | xargs -n1 gh pr merge --squash --auto
    ```
 
-6. **Kick off the first PR**: Run `gh pr update-branch` on one PR to start the chain
+6. **Kick off the merge chain**:
+   - Check remaining open PRs: `gh pr list --author app/dependabot --json number,state`
+   - If PRs remain, update the oldest open PR's branch: `gh pr update-branch <oldest-PR-number>`
+   - Note: Some PRs may merge immediately after auto-merge is set if already up-to-date
 
 7. **Monitor until all PRs are processed**:
-   - Periodically check: `gh pr list --author app/dependabot --json number,state,mergeable`
-   - For each remaining PR, check status with `gh pr view <PR#> --json state,mergeStateStatus`
+   - Check every 30-60 seconds: `gh pr list --author app/dependabot --json number,state,mergeable,mergeStateStatus,statusCheckRollup`
    - Handle issues as they arise:
      - **Conflicts**: `gh pr comment <PR#> --body "@dependabot recreate"`
-     - **CI failures**: Report to user for manual review
+     - **CI failures**: Disable auto-merge on that PR (`gh pr merge --disable-auto <PR#>`), report to user, continue with remaining PRs
      - **Blocked**: May need manual `gh pr update-branch`
+   - When a PR merges, update the next oldest open PR's branch if it shows `mergeStateStatus: "BEHIND"`
+   - If a PR is stuck for >10 minutes, investigate manually
    - Continue until no open PRs remain
 
 8. **Verify completion**: `gh pr list --author app/dependabot` should show no results (or only skipped PRs)
 
+9. **Sync local repository**: If on main branch, run `git pull` to update with merged changes
+
 ## Safety criteria
 
-Focus on npm dependency updates with patch/minor version bumps. These are generally safe:
-
-- @tailwindcss packages, tailwind-merge, tailwindcss
-- @radix-ui packages (react-dialog, react-slot, etc.)
-- lucide-react, clsx, class-variance-authority
-- vite, vitest, @vitejs packages
-- typescript-eslint, eslint packages
-- @types packages
+Focus on dependency updates with patch/minor version bumps. Use your knowledge of common packages to determine safety.
 
 Skip or ask user about:
 
