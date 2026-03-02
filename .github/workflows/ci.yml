@@ -104,8 +104,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          state="$(gh pr view ${{ github.event.pull_request.number }} --json state --jq .state)"
-          if [[ "$state" == "OPEN" ]]; then
+          state="$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} --jq .state)"
+          if [[ "$state" == "open" ]]; then
             echo "open=true" >> "$GITHUB_OUTPUT"
           else
             echo "open=false" >> "$GITHUB_OUTPUT"
