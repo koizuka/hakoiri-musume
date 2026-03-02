@@ -99,19 +99,36 @@ jobs:
       cancel-in-progress: false
 
     steps:
+      - name: Skip deploy if PR is already closed
+        id: pr-state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          state="$(gh pr view ${{ github.event.pull_request.number }} --json state --jq .state)"
+          if [[ "$state" == "OPEN" ]]; then
+            echo "open=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "open=false" >> "$GITHUB_OUTPUT"
+            echo "PR #${{ github.event.pull_request.number }} is $state. Skipping preview deploy."
+          fi
+
       - name: Checkout PR
+        if: steps.pr-state.outputs.open == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Node.js
+        if: steps.pr-state.outputs.open == 'true'
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
+        if: steps.pr-state.outputs.open == 'true'
         run: npm ci
 
       - name: Build with PR-specific base path
+        if: steps.pr-state.outputs.open == 'true'
         run: |
           # Create a temporary vite config for PR preview
           cat > vite.config.pr.ts << 'EOF'
@@ -134,6 +151,7 @@ jobs:
           npx vite build --config vite.config.pr.ts
 
       - name: Deploy PR Preview
+        if: steps.pr-state.outputs.open == 'true'
         uses: koizuka/pr-preview-action@e7366d355cc0c6a1b7d96965f1d3c82a82287297 # v1.0.0
         with:
           action: deploy
