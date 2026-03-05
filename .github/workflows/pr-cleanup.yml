@@ -35,7 +35,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          open_prs="$(gh pr list --state open --json number --jq '.[].number' | tr '\n' ' ')"
+          open_prs="$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number' | tr '\n' ' ')"
           cd gh-pages
 
           removed=0
