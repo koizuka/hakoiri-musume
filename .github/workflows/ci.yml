@@ -152,7 +152,7 @@ jobs:
 
       - name: Deploy PR Preview
         if: steps.pr-state.outputs.open == 'true'
-        uses: koizuka/pr-preview-action@e7366d355cc0c6a1b7d96965f1d3c82a82287297 # v1.0.0
+        uses: koizuka/pr-preview-action@942966838e8175992f5fa468d7f6a640479c3c85 # v1.1.0
         with:
           action: deploy
           source-dir: dist

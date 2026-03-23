@@ -11,7 +11,7 @@ permissions:
 # Use shared concurrency group for all deployments
 concurrency:
   group: "github-pages-deployment"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   cleanup:
@@ -19,46 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cleanup PR Preview
-        uses: koizuka/pr-preview-action@e7366d355cc0c6a1b7d96965f1d3c82a82287297 # v1.0.0
+        uses: koizuka/pr-preview-action@942966838e8175992f5fa468d7f6a640479c3c85 # v1.1.0
         with:
           action: cleanup
           base-url: https://koizuka.github.io/hakoiri-musume
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Remove stale PR preview directories
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          open_prs="$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number' | tr '\n' ' ')"
-          cd gh-pages
-
-          removed=0
-          if [[ -d pr ]]; then
-            for dir in pr/*; do
-              [[ -d "$dir" ]] || continue
-              pr_number="$(basename "$dir")"
-              [[ "$pr_number" =~ ^[0-9]+$ ]] || continue
-
-              if [[ " $open_prs " != *" $pr_number "* ]]; then
-                echo "Removing stale preview: pr/$pr_number"
-                rm -rf "$dir"
-                removed=1
-              fi
-            done
-          fi
-
-          if [[ "$removed" -eq 1 ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "Cleanup stale PR preview directories"
-            git push
-          else
-            echo "No stale PR preview directories found."
-          fi
