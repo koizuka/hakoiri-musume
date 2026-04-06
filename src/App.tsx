@@ -4,7 +4,7 @@ import { GameBoard } from './components/GameBoard'
 import { GameControls } from './components/GameControls'
 import { WinModal } from './components/WinModal'
 import { Kbd } from './components/Kbd'
-import { Github } from 'lucide-react'
+import { GitHubIcon } from './components/GitHubIcon'
 
 function App() {
   const [showWinModal, setShowWinModal] = useState(false)
@@ -139,7 +139,7 @@ function App() {
             fontFamily: 'var(--font-mincho)'
           }}
         >
-          <Github className="w-4 h-4" />
+          <GitHubIcon className="w-4 h-4" />
           <span>GitHub</span>
         </a>
       </footer>
