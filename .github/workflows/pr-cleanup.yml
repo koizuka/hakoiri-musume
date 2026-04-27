@@ -11,7 +11,7 @@ permissions:
 # Use shared concurrency group for all deployments
 concurrency:
   group: "github-pages-deployment"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   cleanup:
