@@ -180,6 +180,7 @@ jobs:
     concurrency:
       group: "github-pages-deployment"
       cancel-in-progress: false
+      queue: max
 
     steps:
       - name: Skip deploy if PR is already closed
