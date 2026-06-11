@@ -13,6 +13,7 @@ permissions:
 concurrency:
   group: "github-pages-deployment"
   cancel-in-progress: false
+  queue: max
 
 jobs:
   # Detect which files have changed to determine if we need to deploy
