@@ -32,7 +32,6 @@ function App() {
 
   useEffect(() => {
     if (gameState.isWon && !prevIsWonRef.current) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowWinModal(true)
     }
 
