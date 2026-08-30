@@ -23,6 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Local coding-agent state
+.claude/settings.local.json
+.codex-log/
+
 # Environment variables
 .env
 .env.local
