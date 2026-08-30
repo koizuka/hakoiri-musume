@@ -39,7 +39,7 @@ jobs:
               - 'vitest.config.ts'
               - 'postcss.config.js'
               - 'tailwind.config.js'
-              - 'eslint.config.js'
+              - '.oxlintrc.json'
               - 'index.html'
               - 'components.json'
               - '.nvmrc'

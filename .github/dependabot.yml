@@ -28,16 +28,10 @@ updates:
           - "tailwindcss"
           - "@tailwindcss/*"
           - "tailwindcss-*"
-      # ESLint core (eslint本体と@eslint/*)
-      eslint-core:
+      # Oxlint関連
+      oxlint:
         patterns:
-          - "eslint"
-          - "@eslint/*"
-      # ESLint plugins (eslint-*とtypescript-eslint)
-      eslint-plugins:
-        patterns:
-          - "eslint-*"
-          - "typescript-eslint"
+          - "oxlint"
       # Radix UI関連
       radix-ui:
         patterns:

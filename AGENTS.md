@@ -12,7 +12,7 @@
 ```bash
 npm ci                  # Install the locked dependency set
 npm run typecheck       # TypeScript checks
-npm run lint            # ESLint
+npm run lint            # Oxlint
 npm test -- --run       # Run the test suite once (non-watch mode)
 npm run build           # Production build
 ```
