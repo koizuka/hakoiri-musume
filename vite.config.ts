@@ -8,7 +8,7 @@ export default defineConfig({
   base: '/hakoiri-musume/',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
 })
