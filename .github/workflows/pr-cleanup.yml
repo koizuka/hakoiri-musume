@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cleanup PR Preview
-        uses: koizuka/pr-preview-action@b03654e20a3e1a9c84309ac9a864e6ba3c4d078b # v1.1.1
+        uses: koizuka/pr-preview-action@3c83fb8474344c71cabade2154768b143278e9b1 # v1.1.2
         with:
           action: cleanup
           base-url: https://koizuka.github.io/hakoiri-musume
